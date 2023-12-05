@@ -127,10 +127,10 @@ private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada pa
 		return recorrido;
 	}
 
-/* ESTA NO USA LA VARIABLE DE CLASE RED, CREA UN GRAFO EN CADA INSTANCIA */
+
 	public List<List<Tramo>> recorridos(Parada paradaOrigen, Parada paradaDestino, int horario, int nroLineas) {
 		
-		// crear el grafo
+		// crear el grafo (en caso de que necesite ser actualizado, patron OBSERVER)
 		cargarDatos(coordinador.listarParadas(),coordinador.listarLineas(),coordinador.listarTramos());
 
 		// Crear grafo
@@ -196,7 +196,7 @@ private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada pa
 
 	
 	
-	/* ESTA INTENTA USA LA VARIABLE DE CLASE RED, PERO NO ANDA */
+
 	public List<List<Tramo>> recorridos1(Parada paradaOrigen, Parada paradaDestino, int horario, int nroLineas) {
 		
 		// crear el grafo (en caso de que necesite ser actualizado, patron OBSERVER)
@@ -260,44 +260,7 @@ private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada pa
 		return listaTramos;
 	}
 
-	/*private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada paradaDestino){
-		
-		Set<ParadaLinea> paradaLineas = new HashSet<ParadaLinea>();
-		paradaLineas.addAll(red.outgoingEdgesOf(paradaOrigen));
-		paradaLineas.addAll(red.incomingEdgesOf(paradaDestino));
-		
-		Set <Linea> lineas = new HashSet<Linea>(); 
-		for (ParadaLinea p: paradaLineas)
-			lineas.add(p.getLinea());
-		
-		Graph<Parada, ParadaLinea> recorrido = new DirectedMultigraph<>(null, null, false);
-
-		// Cargar paradas
-		for (Parada p : paradaMap.values())
-			recorrido.addVertex(p);
-
-		// Cargar tramos lineas
-		Parada origen, destino;
-		for (Linea l : lineas)
-			for (int i = 0; i < l.getParadas().size() - 1; i++) {
-				origen = l.getParadas().get(i);
-				destino = l.getParadas().get(i + 1);
-				recorrido.addEdge(origen, destino, new ParadaLinea(origen, l));
-			}
-
-		// Cargar tramos caminando
-		Linea linea;
-		for (Tramo t : tramoMap.values())
-			if (t.getTipo() == Constantes.TRAMO_CAMINANDO) {
-				linea = new Linea(t.getInicio().getId() + "-" + t.getFin().getId(), Time.toMins("00:00"),
-						Time.toMins("24:00"), 0);
-				recorrido.addEdge(t.getInicio(), t.getFin(), new ParadaLinea(t.getInicio(), linea));
-			}
-
-		
-
-		return recorrido;
-	}*/
+	
 	
 	private int proximoColectivo(Linea linea, Parada parada, int horario) {
 		int nroParada = linea.getParadas().indexOf(parada);
