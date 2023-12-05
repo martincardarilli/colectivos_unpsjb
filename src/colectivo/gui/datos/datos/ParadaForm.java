@@ -160,7 +160,6 @@ public class ParadaForm extends JDialog {
 
 		if (accion == Constantes.MODIFICAR) {
 			jtfID.setEditable(false);
-			System.out.println("accion");
 			//System.out.println(linea.getNombre());
 			//nombreOriginal = linea.getNombre(); // Guardar el nombre original
 			btnModificar.setVisible(true);

@@ -152,7 +152,6 @@ public class LineaForm extends JDialog {
 		}
 
 		if (accion == Constantes.MODIFICAR) {
-			System.out.println("accion");
 			System.out.println(linea.getNombre());
 			nombreOriginal = linea.getNombre(); // Guardar el nombre original
 			btnModificar.setVisible(true);
