@@ -2,8 +2,11 @@ package colectivo.dao.secuencial;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Formatter;
 import java.util.FormatterClosedException;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -61,20 +64,30 @@ public class ParadaSecuencialDAO implements ParadaDao {
 	}
 
 	private void writeToFile(TreeMap<String, Parada> paradas2, String file) {
-		Formatter outFile = null;
-		try {
-			outFile = new Formatter(file);
-			for (Parada e : paradas2.values()) { 
-				outFile.format("%s;%s;%s;%s\n", e.getId(), e.getDireccion(), String.valueOf(e.getLat()), String.valueOf(e.getLng()));
-			}
-		} catch (FileNotFoundException fileNotFoundException) {
-			System.err.println("Error creating file.");
-		} catch (FormatterClosedException formatterClosedException) {
-			System.err.println("Error writing to file.");
-		} finally {
-			if (outFile != null)
-				outFile.close();
-		}
+	    Formatter outFile = null;
+	    try {
+	        outFile = new Formatter(file);
+
+	        // Crear un DecimalFormat que utilice coma como separador decimal
+	        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+	        symbols.setDecimalSeparator(',');
+	        DecimalFormat df = new DecimalFormat("#.####", symbols);
+
+	        for (Parada e : paradas2.values()) { 
+	            // Usar DecimalFormat para formatear los números decimales
+	            String latFormatted = df.format(e.getLat());
+	            String lngFormatted = df.format(e.getLng());
+
+	            outFile.format("%s;%s;%s;%s;\n", e.getId(), e.getDireccion(), latFormatted, lngFormatted);
+	        }
+	    } catch (FileNotFoundException fileNotFoundException) {
+	        System.err.println("Error creating file.");
+	    } catch (FormatterClosedException formatterClosedException) {
+	        System.err.println("Error writing to file.");
+	    } finally {
+	        if (outFile != null)
+	            outFile.close();
+	    }
 	}
 
 	public TreeMap<String, Parada> buscarTodos() {
