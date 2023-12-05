@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,7 +32,7 @@ import colectivo.modelo.Parada;
  *  @author martincardarilli
  *  @author mpacheco
  */
-public class ParadaList extends JDialog {
+public class ParadaList extends JFrame {
 
 	 private static final long serialVersionUID = 1L;
 	    private Coordinador coordinador;
@@ -81,7 +82,7 @@ public class ParadaList extends JDialog {
 	        Handler handler = new Handler();
 	        btnInsertar.addActionListener(handler);
 
-	        setModal(true);
+	        //setModal(true);
 	    }
 
 	private class Handler implements ActionListener {

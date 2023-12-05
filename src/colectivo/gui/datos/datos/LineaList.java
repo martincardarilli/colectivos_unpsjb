@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,7 +33,7 @@ import colectivo.modelo.Parada;
  *  @author martincardarilli
  *  @author mpacheco
  */
-public class LineaList extends JDialog {
+public class LineaList extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private Coordinador coordinador;
@@ -67,21 +68,25 @@ public class LineaList extends JDialog {
 		            new Object[][] {},
 		            // Agregar columnas adicionales para las paradas
 		            new String[] {
-		            	    "Nombre", "Comienza", "Finaliza", "Frecuencia", "Modificar", "Borrar", 
+		            	    "Nombre", "Comienza", "Finaliza", "Frecuencia", "Editar", "Borrar", 
 		            	    "P1", "P2", "P3", "P4", "P5",
 		            	    "P6", "P7", "P8", "P9", "P10",
 		            	    "P11", "P12", "P13", "P14", "P15",
-		            	    "P16", "P17", "P18", "P19", "P20"
+		            	    "P16", "P17", "P18", "P19", "P20", "Editar P"
 		            	}) {
-		            boolean[] columnEditables = new boolean[] { false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+		            boolean[] columnEditables = new boolean[] { false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true};
 
 		            public boolean isCellEditable(int row, int column) {
 		                return columnEditables[column];
 		            }
 		        });
 
-		tableLinea.getColumn("Modificar").setCellRenderer(new ButtonRenderer());
-		tableLinea.getColumn("Modificar").setCellEditor(new ButtonEditor(new JCheckBox()));
+		tableLinea.getColumn("Editar").setCellRenderer(new ButtonRenderer());
+		tableLinea.getColumn("Editar").setCellEditor(new ButtonEditor(new JCheckBox()));
+		
+		tableLinea.getColumn("Editar P").setCellRenderer(new ButtonRenderer());
+		tableLinea.getColumn("Editar P").setCellEditor(new ButtonEditor(new JCheckBox()));
+
 		tableLinea.getColumn("Borrar").setCellRenderer(new ButtonRenderer());
 		tableLinea.getColumn("Borrar").setCellEditor(new ButtonEditor(new JCheckBox()));
 		scrollPane.setViewportView(tableLinea);
@@ -91,7 +96,7 @@ public class LineaList extends JDialog {
 		Handler handler = new Handler();
 		btnInsertar.addActionListener(handler);
 
-		setModal(true);
+		//setModal(true);
 	}
 
 	private class Handler implements ActionListener {
@@ -119,6 +124,10 @@ public class LineaList extends JDialog {
 	            columnModel.getColumn(i).setPreferredWidth(50);
 	        }
 	    }
+	    
+	    columnModel.getColumn(26).setPreferredWidth(50); // Frecuencia
+	    
+	    
 	}
 
 	public void loadTable() {
@@ -137,7 +146,7 @@ public class LineaList extends JDialog {
 	
 
 	public void addRow(Linea linea) {
-	    Object[] row = new Object[26]; // Asegúrate de que el tamaño del array coincida con el número de columnas
+	    Object[] row = new Object[27]; // Asegúrate de que el tamaño del array coincida con el número de columnas
 	    row[0] = linea.getNombre();
 	    row[1] = convertirMinutosAHorario(linea.getComienza());
 	    row[2] = convertirMinutosAHorario(linea.getFinaliza());
@@ -153,6 +162,8 @@ public class LineaList extends JDialog {
 	            break; // Si hay más de 20 paradas, solo se muestran las primeras 20
 	        }
 	    }
+	    
+	    row[26] = "editParadas";
 
 	    ((DefaultTableModel) tableLinea.getModel()).addRow(row);
 	}
@@ -189,6 +200,8 @@ public class LineaList extends JDialog {
 				icon = new ImageIcon(getClass().getResource("/imagen/b_edit.png"));
 			if (value.toString().equals("drop"))
 				icon = new ImageIcon(getClass().getResource("/imagen/b_drop.png"));
+			if (value.toString().equals("editParadas"))
+				icon = new ImageIcon(getClass().getResource("/imagen/b_edit.png"));
 			setIcon(icon);
 			return this;
 		}
@@ -254,6 +267,8 @@ public class LineaList extends JDialog {
 				Linea linea = (Linea) coordinador.buscarLinea(new Linea(id));
 				if (label.equals("edit"))
 					coordinador.modificarLineaForm(linea);
+				else if (label.equals("editParadas"))
+					coordinador.modificarLineaParadasForm(linea);
 				else
 					coordinador.borrarLineaForm(linea);
 			}

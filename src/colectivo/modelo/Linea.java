@@ -74,6 +74,10 @@ public class Linea {
 		return paradas;
 	}
 
+	public void setParadas(List<Parada> paradas) {
+		this.paradas = paradas;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

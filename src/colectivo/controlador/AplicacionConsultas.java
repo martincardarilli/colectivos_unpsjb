@@ -4,6 +4,7 @@ import colectivo.gui.datos.consulta.ConsultaForm;
 
 import colectivo.gui.datos.datos.LineaForm;
 import colectivo.gui.datos.datos.LineaList;
+import colectivo.gui.datos.datos.LineaParadasForm;
 import colectivo.gui.datos.datos.ParadaForm;
 import colectivo.gui.datos.datos.ParadaList;
 import colectivo.interfaz.Interfaz;
@@ -36,6 +37,8 @@ public class AplicacionConsultas {
 	private LineaList lineaList;
 	private LineaForm lineaForm;
 	
+	private LineaParadasForm lineaParadasForm;
+	
 	private ParadaList paradaList;
 	private ParadaForm paradaForm;
 
@@ -63,6 +66,7 @@ public class AplicacionConsultas {
 		consultaForm = new ConsultaForm();
 		lineaList = new LineaList();
 		lineaForm = new LineaForm();
+		lineaParadasForm = new LineaParadasForm();
 		paradaList = new ParadaList();
 		paradaForm = new ParadaForm();
 		interfaz = new Interfaz();
@@ -82,6 +86,9 @@ public class AplicacionConsultas {
 		
 		coordinador.setLineaForm(lineaForm);
 		lineaForm.setCoordinador(coordinador);
+		
+		coordinador.setLineaParadasForm(lineaParadasForm);
+		lineaParadasForm.setCoordinador(coordinador);
 		
 		coordinador.setParadaList(paradaList);
 		paradaList.setCoordinador(coordinador);

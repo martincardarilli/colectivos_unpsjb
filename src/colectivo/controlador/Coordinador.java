@@ -22,6 +22,7 @@ import colectivo.gui.datos.consulta.ConsultaForm;
 
 import colectivo.gui.datos.datos.LineaForm;
 import colectivo.gui.datos.datos.LineaList;
+import colectivo.gui.datos.datos.LineaParadasForm;
 import colectivo.gui.datos.datos.ParadaForm;
 import colectivo.gui.datos.datos.ParadaList;
 
@@ -47,6 +48,8 @@ public class Coordinador {
 
 	private LineaList lineaList;
 	private LineaForm lineaForm;
+	
+	private LineaParadasForm lineaParadasForm;
 	
 	private ParadaList paradaList;
 	private ParadaForm paradaForm;
@@ -185,6 +188,21 @@ public class Coordinador {
 		this.lineaForm = lineaForm;
 	}
 	
+	
+	
+	
+	public LineaParadasForm getLineaParadasForm() {
+		return lineaParadasForm;
+	}
+
+	public void setLineaParadasForm(LineaParadasForm lineaParadasForm) {
+		this.lineaParadasForm = lineaParadasForm;
+	}
+
+	public ParadaForm getParadaForm() {
+		return paradaForm;
+	}
+
 	public void setParadaList(ParadaList paradaList){
 		this.paradaList = paradaList;
 	}
@@ -276,6 +294,20 @@ public class Coordinador {
 	public void modificarLineaForm(Linea linea) {
 		lineaForm.accion(Constantes.MODIFICAR, linea);
 		lineaForm.setVisible(true);
+	}
+	
+	public void modificarLineaParadasForm(Linea linea) {
+		//lineaParadasForm.accion(Constantes.MODIFICAR, linea);
+
+		lineaParadasForm.cargarTodasLasParadas(this.listarParadas2()); // listaDeTodasLasParadas debe ser obtenida de algún lugar
+		lineaParadasForm.cargarLinea(linea);
+		lineaParadasForm.setVisible(true);
+	}
+	
+	public void actualizarLineaConParadas(Linea linea) {
+	    // Aquí actualizas la información de la línea en la base de datos o donde corresponda
+	    empresa.modificarLinea(linea, linea.getNombre()); // Reutiliza el método de modificar línea
+	    lineaList.loadTable();
 	}
 
 	public void borrarLineaForm(Linea linea) {

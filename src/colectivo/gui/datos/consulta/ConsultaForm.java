@@ -257,7 +257,7 @@ public class ConsultaForm extends JFrame {
 
 		}
 		
-		texto += "Cantidad de recorridos posibles ";
+		texto += "Cantidad de recorridos posibles = ";
 		texto += recorridos.size();
 		
 		texto += "\n";
