@@ -1,0 +1,12 @@
+colectivo.conexion
+colectivo.controlador
+colectivo.dao
+colectivo.dao.secuencial
+colectivo.gui.datos.consulta
+colectivo.gui.datos.datos
+colectivo.interfaz
+colectivo.modelo
+colectivo.negocio
+colectivo.servicio
+interfaz.waypoint
+net.datastructures
