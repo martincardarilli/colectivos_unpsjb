@@ -11,6 +11,7 @@ import colectivo.interfaz.Interfaz;
 import colectivo.negocio.Calculo;
 import colectivo.negocio.Empresa;
 import colectivo.negocio.LineaExisteException;
+import colectivo.negocio.Subject;
 
 /**
  * La clase AplicacionConsultas es la clase principal que inicia la aplicación
@@ -30,6 +31,8 @@ public class AplicacionConsultas {
 	// logica
 	private Empresa empresa;
 	private Calculo calculo;
+	
+	private Subject subject;
 
 	// vista
 	private ConsultaForm consultaForm;
@@ -60,6 +63,7 @@ public class AplicacionConsultas {
 		empresa = Empresa.getEmpresa();
 		
 		calculo = new Calculo();
+		subject = new Subject();
 		
 		coordinador = new Coordinador();
 		
@@ -99,7 +103,9 @@ public class AplicacionConsultas {
 
 		coordinador.setInterfaz(interfaz);
 		interfaz.setCoordinador(coordinador);
-
+		
+		empresa.init(subject);
+		calculo.init(subject);
 
 		calculo.cargarDatos(coordinador.listarParadas(),coordinador.listarLineas(),coordinador.listarTramos());
 		coordinador.mostrarConsulta();

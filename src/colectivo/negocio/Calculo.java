@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.YenKShortestPath;
@@ -18,18 +19,32 @@ import colectivo.modelo.Tramo;
 import colectivo.util.Time;
 import net.datastructures.TreeMap;
 
-public class Calculo {
+public class Calculo implements Observer{
 
 	private Graph<Parada, ParadaLinea> red;
 	private TreeMap<String, Parada> paradaMap;
 	private TreeMap<String, Tramo> tramoMap;
 	private Coordinador coordinador;
+	
+	private Subject subject;
+	private boolean actualizar;
+	
+	private final static Logger logger = Logger.getLogger(Calculo.class);
 
 	public Calculo() {
 		
 	}
 	
+	public void init(Subject subject) {
+		this.subject = subject;
+		this.subject.attach(this);
+		this.actualizar = true;
+		//refresh? congestiones = coordinador.getCongestion();
+	}
+	
 	public void cargarDatos(TreeMap<String, Parada> paradaMap, TreeMap<String, Linea> lineaMap, List<Tramo> tramos) {
+		
+		if (actualizar) {
 		// Map paradas
 		this.paradaMap = paradaMap;
 		
@@ -65,11 +80,58 @@ public class Calculo {
 				red.addEdge(t.getInicio(), t.getFin(), new ParadaLinea(t.getInicio(), linea));
 			}
 		
-	
+		actualizar = false;
+		logger.info("Se actualizaron los datos");
+		}else {
+			logger.info("No se actualizaron los datos");
+		}
 
 	}
+	
+private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada paradaDestino){
+		
+		Set<ParadaLinea> paradaLineas = new HashSet<ParadaLinea>();
+		paradaLineas.addAll(red.outgoingEdgesOf(paradaOrigen));
+		paradaLineas.addAll(red.incomingEdgesOf(paradaDestino));
+		
+		Set <Linea> lineas = new HashSet<Linea>(); 
+		for (ParadaLinea p: paradaLineas)
+			lineas.add(p.getLinea());
+		
+		Graph<Parada, ParadaLinea> recorrido = new DirectedMultigraph<>(null, null, false);
 
+		// Cargar paradas
+		for (Parada p : paradaMap.values())
+			recorrido.addVertex(p);
+
+		// Cargar tramos lineas
+		Parada origen, destino;
+		for (Linea l : lineas)
+			for (int i = 0; i < l.getParadas().size() - 1; i++) {
+				origen = l.getParadas().get(i);
+				destino = l.getParadas().get(i + 1);
+				recorrido.addEdge(origen, destino, new ParadaLinea(origen, l));
+			}
+
+		// Cargar tramos caminando
+		Linea linea;
+		for (Tramo t : tramoMap.values())
+			if (t.getTipo() == Constantes.TRAMO_CAMINANDO) {
+				linea = new Linea(t.getInicio().getId() + "-" + t.getFin().getId(), Time.toMins("00:00"),
+						Time.toMins("24:00"), 0);
+				recorrido.addEdge(t.getInicio(), t.getFin(), new ParadaLinea(t.getInicio(), linea));
+			}
+
+		
+
+		return recorrido;
+	}
+
+/* ESTA NO USA LA VARIABLE DE CLASE RED, CREA UN GRAFO EN CADA INSTANCIA */
 	public List<List<Tramo>> recorridos(Parada paradaOrigen, Parada paradaDestino, int horario, int nroLineas) {
+		
+		// crear el grafo
+		cargarDatos(coordinador.listarParadas(),coordinador.listarLineas(),coordinador.listarTramos());
 
 		// Crear grafo
 		Graph<Parada, ParadaLinea> redConsulta = grafoRecorrido(paradaOrigen, paradaDestino);
@@ -132,7 +194,13 @@ public class Calculo {
 		return listaTramos;
 	}
 
+	
+	
+	/* ESTA INTENTA USA LA VARIABLE DE CLASE RED, PERO NO ANDA */
 	public List<List<Tramo>> recorridos1(Parada paradaOrigen, Parada paradaDestino, int horario, int nroLineas) {
+		
+		// crear el grafo (en caso de que necesite ser actualizado, patron OBSERVER)
+		cargarDatos(coordinador.listarParadas(),coordinador.listarLineas(),coordinador.listarTramos());
 
 		// Todos los recorridos
 		YenKShortestPath<Parada, ParadaLinea> yksp = new YenKShortestPath<Parada, ParadaLinea>(red);
@@ -192,7 +260,7 @@ public class Calculo {
 		return listaTramos;
 	}
 
-	private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada paradaDestino){
+	/*private Graph<Parada, ParadaLinea> grafoRecorrido(Parada paradaOrigen, Parada paradaDestino){
 		
 		Set<ParadaLinea> paradaLineas = new HashSet<ParadaLinea>();
 		paradaLineas.addAll(red.outgoingEdgesOf(paradaOrigen));
@@ -229,7 +297,7 @@ public class Calculo {
 		
 
 		return recorrido;
-	}
+	}*/
 	
 	private int proximoColectivo(Linea linea, Parada parada, int horario) {
 		int nroParada = linea.getParadas().indexOf(parada);
@@ -260,8 +328,15 @@ public class Calculo {
     public void setCoordinador(Coordinador coordinador) {
 		this.coordinador = coordinador;
 	}
+    
+    @Override
+	public void update() {
+		actualizar = true;
+	}
+    
+    
 
-
+// inner class
 	private class ParadaLinea {
 		private Parada parada;
 		private Linea linea;

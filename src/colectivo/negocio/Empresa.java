@@ -2,6 +2,8 @@ package colectivo.negocio;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import colectivo.modelo.Linea;
 import colectivo.modelo.Parada;
 import colectivo.modelo.Tramo;
@@ -26,6 +28,8 @@ import net.datastructures.TreeMap;
 public class Empresa {
 
     private static Empresa empresa = null;
+    
+	private final static Logger logger = Logger.getLogger(Empresa.class);
 
     private String nombre;
     private TreeMap<String, Linea> lineas;
@@ -34,6 +38,8 @@ public class Empresa {
     private ParadaService paradaService;
     private List<Tramo> tramos;
     private TramoService tramoService;
+    
+    private Subject subject;
 
     public static Empresa getEmpresa() {
         if (empresa == null) {
@@ -67,6 +73,10 @@ public class Empresa {
         tramoService = new TramoServiceImpl();
         tramos.addAll(tramoService.buscarTodos());
     }
+    
+	public void init(Subject subject) {
+		this.subject = subject;
+	}
 
 
     public void agregarLinea(Linea linea) throws LineaExisteException {
@@ -75,6 +85,8 @@ public class Empresa {
         }
         lineas.put(linea.getNombre(), linea); 
         lineaService.insertar(linea);
+    	subject.refresh();
+		logger.info("Se agrega una l�nea");
     }
 
     public void modificarLinea(Linea linea, String nombreOriginal) {   
@@ -84,6 +96,8 @@ public class Empresa {
         	lineas.get(nombreOriginal).setNombre(linea.getNombre());
             lineaService.actualizar(linea);
             System.out.println(lineas);
+            subject.refresh();
+    		logger.info("Se modifica una l�nea");
         }
     }
 
@@ -91,6 +105,8 @@ public class Empresa {
         if (lineas.get(linea.getNombre()) != null) {
             lineas.remove(linea.getNombre());
             lineaService.borrar(linea);
+    		subject.refresh();
+    		logger.info("Se borra una l�nea");
         }
     }
     
@@ -107,6 +123,8 @@ public class Empresa {
         }
         paradas.put(parada.getId(), parada); 
         paradaService.insertar(parada);
+    	subject.refresh();
+    	logger.info("Se agrega una parada");
     }
 
     public void modificarParada(Parada parada) {
@@ -115,6 +133,8 @@ public class Empresa {
             //lineas.put(nombreOriginal, linea);
     	paradas.get(parada.getId());
         	paradaService.actualizar(parada);
+         	subject.refresh();
+        	logger.info("Se modifica una parada");
 
     }
 
@@ -123,6 +143,8 @@ public class Empresa {
         if (paradas.get(parada.getId()) != null) {
         	paradas.remove(parada.getId());
             paradaService.borrar(parada);
+         	subject.refresh();
+        	logger.info("Se borra una parada");
         }
     }
     
